@@ -41,5 +41,3 @@ spec:
     app: frontend
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}
