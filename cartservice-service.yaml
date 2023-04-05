@@ -4,9 +4,9 @@ metadata:
   name: cartservice
   namespace: onlineboutique
 spec:
-  clusterIP: 10.8.0.1
+  clusterIP: 10.8.0.4
   clusterIPs:
-  - 10.8.0.1
+  - 10.8.0.4
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
