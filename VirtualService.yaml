@@ -3,7 +3,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     helm.sh/resource-policy: keep
-  creationTimestamp: "2022-12-14T00:28:33Z"
   generation: 2
   labels:
     app: istio-pilot
@@ -11,8 +10,6 @@ metadata:
     heritage: Tiller
     release: istio
   name: virtualservices.networking.istio.io
-  resourceVersion: "66041433"
-  uid: d97ccaaf-db06-4f7c-b21d-f99f27a6d5ee
 spec:
   conversion:
     strategy: None
