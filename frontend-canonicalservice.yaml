@@ -8,8 +8,3 @@ metadata:
   resourceVersion: "673234"
   uid: 2c85009e-31a8-4207-bbc3-021b29287bab
 spec: {}
-status:
-  resourceTypes:
-  - name: Pod
-    state: Active
-  state: Active
