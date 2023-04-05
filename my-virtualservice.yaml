@@ -1,25 +1,8 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  annotations:
-    config.k8s.io/owning-inventory: onlineboutique_repo-sync
-    config.kubernetes.io/origin: |
-      path: docs/online-boutique-asm-manifests/base/all/virtualservice.yaml
-      repo: https://github.com/GoogleCloudPlatform/anthos-service-mesh-samples
-      ref: main
-    configmanagement.gke.io/cluster-name: asm-acm-tutorial
-    configmanagement.gke.io/managed: enabled
-    configmanagement.gke.io/source-path: asm-acm-tutorial/online-boutique/deployments/networking.istio.io_v1alpha3_virtualservice_frontend.yaml
-    configmanagement.gke.io/token: 1fbab5c90af9029b26451fec92e9900d8db23aee
-    configsync.gke.io/declared-fields: '{"f:metadata":{"f:annotations":{"f:config.kubernetes.io/origin":{}},"f:labels":{}},"f:spec":{"f:gateways":{},"f:hosts":{},"f:http":{}}}'
-    configsync.gke.io/git-context: '{"repo":"https://github.com/GoogleCloudPlatform/anthos-config-management-samples","branch":"main","rev":"HEAD"}'
-    configsync.gke.io/manager: onlineboutique
-    configsync.gke.io/resource-id: networking.istio.io_virtualservice_onlineboutique_frontend
   creationTimestamp: "2022-12-14T19:04:03Z"
   generation: 1
-  labels:
-    app.kubernetes.io/managed-by: configmanagement.gke.io
-    configsync.gke.io/declared-version: v1alpha3
   name: frontend
   namespace: onlineboutique
   resourceVersion: "26197904"
