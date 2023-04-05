@@ -41,5 +41,3 @@ spec:
     app: cartservice
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}
