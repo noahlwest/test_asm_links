@@ -4,9 +4,9 @@ metadata:
   name: adservice
   namespace: onlineboutique
 spec:
-  clusterIP: 10.112.6.19
+  clusterIP: 10.8.0.2
   clusterIPs:
-  - 10.112.6.19
+  - 10.8.0.2
   internalTrafficPolicy: Cluster
   ipFamilies:
   - IPv4
