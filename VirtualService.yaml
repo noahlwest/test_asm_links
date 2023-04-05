@@ -1527,27 +1527,3 @@ spec:
     storage: false
     subresources:
       status: {}
-status:
-  acceptedNames:
-    categories:
-    - istio-io
-    - networking-istio-io
-    kind: VirtualService
-    listKind: VirtualServiceList
-    plural: virtualservices
-    shortNames:
-    - vs
-    singular: virtualservice
-  conditions:
-  - lastTransitionTime: "2022-12-14T00:28:34Z"
-    message: no conflicts found
-    reason: NoConflicts
-    status: "True"
-    type: NamesAccepted
-  - lastTransitionTime: "2022-12-14T00:28:34Z"
-    message: the initial names have been accepted
-    reason: InitialNamesAccepted
-    status: "True"
-    type: Established
-  storedVersions:
-  - v1alpha3
