@@ -1,8 +1,6 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  creationTimestamp: "2023-03-30T03:39:43Z"
-  generateName: adservice-795589cf6f-
   labels:
     app: adservice
     pod-template-hash: 795589cf6f
@@ -11,15 +9,6 @@ metadata:
     service.istio.io/canonical-revision: latest
   name: adservice-795589cf6f-j4w2f
   namespace: onlineboutique
-  ownerReferences:
-  - apiVersion: apps/v1
-    blockOwnerDeletion: true
-    controller: true
-    kind: ReplicaSet
-    name: adservice-795589cf6f
-    uid: ee87b061-34bf-46f0-9915-2e61fa33c9e6
-  resourceVersion: "96418468"
-  uid: 9125bacf-ec39-4fab-a077-79ad842ffc75
 spec:
   containers:
   - env:
