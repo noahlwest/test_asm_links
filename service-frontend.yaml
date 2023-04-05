@@ -1,11 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: "2022-12-14T19:04:02Z"
   name: frontend
   namespace: onlineboutique
-  resourceVersion: "26197858"
-  uid: 3e140cdd-2f05-47a5-9959-4a1381b529bb
 spec:
   clusterIP: 10.112.3.152
   clusterIPs:
