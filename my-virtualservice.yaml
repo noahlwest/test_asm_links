@@ -1,12 +1,8 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  creationTimestamp: "2022-12-14T19:04:03Z"
-  generation: 1
   name: frontend
   namespace: onlineboutique
-  resourceVersion: "26197904"
-  uid: 524913bd-e700-41a3-a2f6-f78266fb9574
 spec:
   gateways:
   - asm-ingress/asm-ingressgateway
