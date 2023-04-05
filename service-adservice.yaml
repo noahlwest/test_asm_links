@@ -41,5 +41,3 @@ spec:
     app: adservice
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}
