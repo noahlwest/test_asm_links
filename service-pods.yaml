@@ -1,0 +1,451 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/networks: istio-cni
+    kubectl.kubernetes.io/default-container: server
+    kubectl.kubernetes.io/default-logs-container: server
+    prometheus.io/path: /stats/prometheus
+    prometheus.io/port: "15020"
+    prometheus.io/scrape: "true"
+    sidecar.istio.io/interceptionMode: REDIRECT
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    sidecar.istio.io/status: '{"initContainers":["istio-validation"],"containers":["istio-proxy"],"volumes":["workload-socket","credential-socket","workload-certs","istio-envoy","istio-data","istio-podinfo","istio-token"],"imagePullSecrets":null,"revision":"asm-managed"}'
+    traffic.sidecar.istio.io/excludeInboundPorts: "15020"
+    traffic.sidecar.istio.io/includeInboundPorts: '*'
+    traffic.sidecar.istio.io/includeOutboundIPRanges: '*'
+  creationTimestamp: "2023-03-29T18:51:43Z"
+  generateName: frontend-848d9f9dc9-
+  labels:
+    app: frontend
+    pod-template-hash: 848d9f9dc9
+    security.istio.io/tlsMode: istio
+    service.istio.io/canonical-name: frontend
+    service.istio.io/canonical-revision: latest
+  name: frontend-848d9f9dc9-f7m5b
+  namespace: onlineboutique
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: frontend-848d9f9dc9
+    uid: 4d97d148-59d2-437b-b9ea-ac41b6031d1f
+  resourceVersion: "96076143"
+  uid: f2446e99-0379-4e04-bc31-2edbf8beff88
+spec:
+  containers:
+  - env:
+    - name: PORT
+      value: "8080"
+    - name: PRODUCT_CATALOG_SERVICE_ADDR
+      value: productcatalogservice:3550
+    - name: CURRENCY_SERVICE_ADDR
+      value: currencyservice:7000
+    - name: CART_SERVICE_ADDR
+      value: cartservice:7070
+    - name: RECOMMENDATION_SERVICE_ADDR
+      value: recommendationservice:8080
+    - name: SHIPPING_SERVICE_ADDR
+      value: shippingservice:50051
+    - name: CHECKOUT_SERVICE_ADDR
+      value: checkoutservice:5050
+    - name: AD_SERVICE_ADDR
+      value: adservice:9555
+    - name: ENABLE_PROFILER
+      value: "0"
+    image: gcr.io/google-samples/microservices-demo/frontend:v0.5.1
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        httpHeaders:
+        - name: Cookie
+          value: shop_session-id=x-liveness-probe
+        path: /app-health/server/livez
+        port: 15020
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: server
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        httpHeaders:
+        - name: Cookie
+          value: shop_session-id=x-readiness-probe
+        path: /app-health/server/readyz
+        port: 15020
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 200m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - all
+      privileged: false
+      readOnlyRootFilesystem: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-fllzw
+      readOnly: true
+  - args:
+    - proxy
+    - sidecar
+    - --domain
+    - $(POD_NAMESPACE).svc.cluster.local
+    - --proxyLogLevel=warning
+    - --proxyComponentLogLevel=misc:error
+    - --log_output_level=default:info
+    - --stsPort=15463
+    - --concurrency
+    - "2"
+    env:
+    - name: JWT_POLICY
+      value: third-party-jwt
+    - name: PILOT_CERT_PROVIDER
+      value: system
+    - name: CA_ADDR
+      value: meshca.googleapis.com:443
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: SERVICE_ACCOUNT
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.serviceAccountName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: PROXY_CONFIG
+      value: |
+        {"discoveryAddress":"meshconfig.googleapis.com:443","proxyMetadata":{"CA_PROVIDER":"GoogleCA","CA_ROOT_CA":"/etc/ssl/certs/ca-certificates.crt","CA_TRUSTANCHOR":"","FLEET_PROJECT_NUMBER":"484450070976","GCP_METADATA":"westnoah-cs-1|484450070976|asm-acm-tutorial|us-east4-a","OUTPUT_CERTS":"/etc/istio/proxy","PROXY_CONFIG_XDS_AGENT":"true","XDS_AUTH_PROVIDER":"gcp","XDS_ROOT_CA":"/etc/ssl/certs/ca-certificates.crt"},"meshId":"proj-484450070976"}
+    - name: ISTIO_META_POD_PORTS
+      value: |-
+        [
+            {"containerPort":8080,"protocol":"TCP"}
+        ]
+    - name: ISTIO_META_APP_CONTAINERS
+      value: server
+    - name: ISTIO_META_INTERCEPTION_MODE
+      value: REDIRECT
+    - name: ISTIO_META_WORKLOAD_NAME
+      value: frontend
+    - name: ISTIO_META_OWNER
+      value: kubernetes://apis/apps/v1/namespaces/onlineboutique/deployments/frontend
+    - name: ISTIO_META_MESH_ID
+      value: proj-484450070976
+    - name: TRUST_DOMAIN
+      value: westnoah-cs-1.svc.id.goog
+    - name: CA_PROVIDER
+      value: GoogleCA
+    - name: CA_ROOT_CA
+      value: /etc/ssl/certs/ca-certificates.crt
+    - name: CA_TRUSTANCHOR
+    - name: FLEET_PROJECT_NUMBER
+      value: "484450070976"
+    - name: GCP_METADATA
+      value: westnoah-cs-1|484450070976|asm-acm-tutorial|us-east4-a
+    - name: OUTPUT_CERTS
+      value: /etc/istio/proxy
+    - name: PROXY_CONFIG_XDS_AGENT
+      value: "true"
+    - name: XDS_AUTH_PROVIDER
+      value: gcp
+    - name: XDS_ROOT_CA
+      value: /etc/ssl/certs/ca-certificates.crt
+    - name: ISTIO_META_CLOUDRUN_ADDR
+      value: asm-asm-acm-tutorial-asm-managedwrsi2rnq3umfxc-dz33bhgboq-uk.a.run.app:443
+    - name: ISTIO_META_CLUSTER_ID
+      value: cn-westnoah-cs-1-us-east4-a-asm-acm-tutorial
+    - name: ISTIO_KUBE_APP_PROBERS
+      value: '{"/app-health/server/livez":{"httpGet":{"path":"/_healthz","port":8080,"scheme":"HTTP","httpHeaders":[{"name":"Cookie","value":"shop_session-id=x-liveness-probe"}]},"timeoutSeconds":1},"/app-health/server/readyz":{"httpGet":{"path":"/_healthz","port":8080,"scheme":"HTTP","httpHeaders":[{"name":"Cookie","value":"shop_session-id=x-readiness-probe"}]},"timeoutSeconds":1}}'
+    image: gcr.io/gke-release/asm/proxyv2:1.15.4-asm.2
+    imagePullPolicy: IfNotPresent
+    name: istio-proxy
+    ports:
+    - containerPort: 15090
+      name: http-envoy-prom
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 30
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 2
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1337
+      runAsNonRoot: true
+      runAsUser: 1337
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/workload-spiffe-uds
+      name: workload-socket
+    - mountPath: /var/run/secrets/credential-uds
+      name: credential-socket
+    - mountPath: /var/run/secrets/workload-spiffe-credentials
+      name: workload-certs
+    - mountPath: /var/lib/istio/data
+      name: istio-data
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /var/run/secrets/tokens
+      name: istio-token
+    - mountPath: /etc/istio/pod
+      name: istio-podinfo
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-fllzw
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - args:
+    - istio-iptables
+    - -p
+    - "15001"
+    - -z
+    - "15006"
+    - -u
+    - "1337"
+    - -m
+    - REDIRECT
+    - -i
+    - '*'
+    - -x
+    - ""
+    - -b
+    - '*'
+    - -d
+    - 15090,15021,15020
+    - --log_output_level=default:info
+    - --run-validation
+    - --skip-rule-apply
+    env:
+    - name: CA_PROVIDER
+      value: GoogleCA
+    - name: CA_ROOT_CA
+      value: /etc/ssl/certs/ca-certificates.crt
+    - name: CA_TRUSTANCHOR
+    - name: FLEET_PROJECT_NUMBER
+      value: "484450070976"
+    - name: GCP_METADATA
+      value: westnoah-cs-1|484450070976|asm-acm-tutorial|us-east4-a
+    - name: OUTPUT_CERTS
+      value: /etc/istio/proxy
+    - name: PROXY_CONFIG_XDS_AGENT
+      value: "true"
+    - name: XDS_AUTH_PROVIDER
+      value: gcp
+    - name: XDS_ROOT_CA
+      value: /etc/ssl/certs/ca-certificates.crt
+    image: gcr.io/gke-release/asm/proxyv2:1.15.4-asm.2
+    imagePullPolicy: IfNotPresent
+    name: istio-validation
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1337
+      runAsNonRoot: true
+      runAsUser: 1337
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-fllzw
+      readOnly: true
+  nodeName: gke-asm-acm-tutorial-default-pool-4f0e2d8a-z2lo
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - emptyDir: {}
+    name: workload-socket
+  - emptyDir: {}
+    name: credential-socket
+  - emptyDir: {}
+    name: workload-certs
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - emptyDir: {}
+    name: istio-data
+  - downwardAPI:
+      defaultMode: 420
+      items:
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.labels
+        path: labels
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations
+        path: annotations
+    name: istio-podinfo
+  - name: istio-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: westnoah-cs-1.svc.id.goog
+          expirationSeconds: 43200
+          path: istio-token
+  - name: kube-api-access-fllzw
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-29T18:51:44Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-29T18:52:03Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-29T18:52:03Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-29T18:51:43Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://cb4b91033c04d083a0c9280b3e1d80f45406e3b4c7cbbcb87565f27fb43ca0c8
+    image: gcr.io/gke-release/asm/proxyv2:1.15.4-asm.2
+    imageID: gcr.io/gke-release/asm/proxyv2@sha256:5c99147c6464a5cab1a0a84e2948f6c495001b10559e47eb9b782bbeaf44ed86
+    lastState: {}
+    name: istio-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2023-03-29T18:51:46Z"
+  - containerID: containerd://707c7026a06292f6c0a601b76f3dc2d706cf69ecec8667d4ac231c14a33fb463
+    image: gcr.io/google-samples/microservices-demo/frontend:v0.5.1
+    imageID: gcr.io/google-samples/microservices-demo/frontend@sha256:2f0d01c962a793b2ee5d7806ece229d5aaeffe752700164e0ddcfdcbc9921d00
+    lastState: {}
+    name: server
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2023-03-29T18:51:46Z"
+  hostIP: 10.150.0.18
+  initContainerStatuses:
+  - containerID: containerd://374eb8e435e3d39010a874637e654492f3b3a858b7270d594a87c3854cfdd1f0
+    image: gcr.io/gke-release/asm/proxyv2:1.15.4-asm.2
+    imageID: gcr.io/gke-release/asm/proxyv2@sha256:5c99147c6464a5cab1a0a84e2948f6c495001b10559e47eb9b782bbeaf44ed86
+    lastState: {}
+    name: istio-validation
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: containerd://374eb8e435e3d39010a874637e654492f3b3a858b7270d594a87c3854cfdd1f0
+        exitCode: 0
+        finishedAt: "2023-03-29T18:51:44Z"
+        reason: Completed
+        startedAt: "2023-03-29T18:51:44Z"
+  phase: Running
+  podIP: 10.108.0.14
+  podIPs:
+  - ip: 10.108.0.14
+  qosClass: Burstable
+  startTime: "2023-03-29T18:51:43Z"
