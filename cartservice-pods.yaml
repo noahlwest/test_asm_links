@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   labels:
     app: cartservice
-    service.istio.io/canonical-name: cartservice
+    service.istio.io/canonical-name: nonmatching
     service.istio.io/canonical-revision: latest
   name: cartservice-6d994d9676-rqbsc
   namespace: onlineboutique
